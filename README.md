@@ -102,3 +102,7 @@ Os campos de integração (Meta WhatsApp, OpenAI, banco) estão **vazios de prop
 ## Documentação de decisão
 
 Toda decisão, descoberta e mudança de fase está registrada nos arquivos Markdown em `docs/`, com o `NoRadar.md` como arquivo mestre. Não há decisão de produto fora desses arquivos.
+
+## Repositório
+
+Código versionado em `https://github.com/Thuelyton/NoRadar.git` (branch `master`). O Portão de Decisão do `docs/NoRadar.md` continua aberto: a construção foi uma exceção autorizada, não uma aprovação de produto.
