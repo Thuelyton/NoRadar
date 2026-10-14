@@ -1,0 +1,27 @@
+{
+  "name": "radar",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Radar — SaaS de recuperação de orçamentos parados (EM VALIDAÇÃO DE MERCADO)",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "packageManager": "pnpm@10.18.3",
+  "scripts": {
+    "dev": "pnpm compartilhado:build && concurrently -n api,web -c blue,green \"pnpm --filter @radar/api dev\" \"pnpm --filter @radar/web dev\"",
+    "build": "pnpm compartilhado:build && pnpm --filter @radar/api build && pnpm --filter @radar/web build",
+    "start:api": "pnpm --filter @radar/api start",
+    "test": "pnpm compartilhado:build && pnpm --filter @radar/api test && pnpm --filter @radar/web test",
+    "lint": "pnpm --filter @radar/api lint && pnpm --filter @radar/web lint",
+    "typecheck": "pnpm compartilhado:build && pnpm --filter @radar/api typecheck && pnpm --filter @radar/web typecheck",
+    "verificar": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",
+    "compartilhado:build": "pnpm --filter @radar/shared build"
+  },
+  "devDependencies": {
+    "concurrently": "10.0.6"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild"]
+  }
+}

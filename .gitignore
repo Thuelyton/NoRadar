@@ -1,0 +1,33 @@
+# --- Dependências / builds ---
+node_modules/
+dist/
+.next/
+out/
+build/
+*.tsbuildinfo
+
+# --- Segredos e ambiente (nunca versionar) ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# --- Logs e cache ---
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+pnpm-store/
+.cache/
+.turbo/
+
+# --- Testes e cobertura ---
+coverage/
+
+# --- Editor / SO ---
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
