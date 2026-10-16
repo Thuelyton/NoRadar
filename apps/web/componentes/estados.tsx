@@ -1,9 +1,20 @@
-/** Estados da interface: carregando, vazio e erro. */
+/**
+ * Estados da interface: carregando, vazio e erro.
+ * Títulos e mensagens são CONFIGURÁVEIS via props — cada rota fornece os
+ * textos do seu contexto (painel, fila, etc.) sem duplicar componente.
+ */
 
-export function EstadoCarregando() {
+export interface EstadoCarregandoProps {
+  /** Rótulo anunciado a leitores de tela e exibido no estado. */
+  rotulo?: string;
+}
+
+export function EstadoCarregando({
+  rotulo = "Carregando painel…",
+}: EstadoCarregandoProps) {
   return (
     <div role="status" aria-live="polite" className="animate-pulse">
-      <span className="sr-only">Carregando painel…</span>
+      <span className="sr-only">{rotulo}</span>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
           <div key={i} className="h-28 rounded-xl border border-zinc-200 bg-white p-4">
@@ -46,11 +57,17 @@ export function EstadoVazio({
 }
 
 export interface EstadoErroProps {
+  /** Título do erro — padrão genérico do painel; a rota pode sobrescrever. */
+  titulo?: string;
   mensagem: string;
   aoTentarNovamente?: () => void;
 }
 
-export function EstadoErro({ mensagem, aoTentarNovamente }: EstadoErroProps) {
+export function EstadoErro({
+  titulo = "Não foi possível carregar o painel",
+  mensagem,
+  aoTentarNovamente,
+}: EstadoErroProps) {
   return (
     <div
       role="alert"
@@ -59,9 +76,7 @@ export function EstadoErro({ mensagem, aoTentarNovamente }: EstadoErroProps) {
       <p className="text-3xl" aria-hidden="true">
         ⚠️
       </p>
-      <h3 className="mt-3 text-base font-semibold text-rose-900">
-        Não foi possível carregar o painel
-      </h3>
+      <h3 className="mt-3 text-base font-semibold text-rose-900">{titulo}</h3>
       <p className="mx-auto mt-1 max-w-md text-sm text-rose-700">{mensagem}</p>
       {aoTentarNovamente && (
         <button

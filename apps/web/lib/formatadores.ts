@@ -39,6 +39,21 @@ export const ROTULOS_STATUS: Record<string, string> = {
   expirado: "Expirado",
 };
 
+export const ROTULOS_DESFECHO: Record<string, string> = {
+  fechou: "Cliente fechou",
+  recusou: "Cliente recusou",
+  pediu_alteracao: "Pediu alteração",
+  sem_retorno: "Sem retorno",
+  reativado_manutencao: "Reativou manutenção",
+};
+
+export const ROTULOS_CANAL: Record<string, string> = {
+  whatsapp: "WhatsApp",
+  telefone: "Telefone",
+  email: "E-mail",
+  presencial: "Presencial",
+};
+
 /** Classes Tailwind por status (usadas em tabelas e cartões). */
 export const CORES_STATUS: Record<string, string> = {
   enviado: "bg-slate-100 text-slate-700",

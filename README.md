@@ -50,12 +50,30 @@ Sobe API (porta 3001) e web (porta 3000) juntas.
 | Endereço | Descrição |
 |---|---|
 | http://localhost:3000 | Painel do Radar (interface) |
+| http://localhost:3000/fila | Fila de follow-up (interface, demonstração) |
 | http://localhost:3001/api/saude | Verificação de saúde da API |
 | http://localhost:3001/api/painel | Payload do painel (JSON) |
+| http://localhost:3001/api/fila | Fila de follow-up ordenada por urgência (JSON) |
+| http://localhost:3001/api/demonstracao/reinicializar | Reinício seguro dos dados fictícios (POST) |
+
+### Fila de follow-up (demonstração)
+
+A tela `/fila` mostra os orçamentos pendentes em ordem de urgência (mais dias sem resposta primeiro; empate, maior valor primeiro) e permite **registrar um resultado simulado** (`fechou`, `recusou`, `pediu_alteracao`, `sem_retorno`, `reativado_manutenção`). O registro altera o estado **em memória da API** apenas nesta sessão de demonstração: o item sai (ou permanece) na fila conforme o desfecho, e os indicadores são recalculados no servidor e devolvidos junto com a resposta.
+
+- Rota: `POST /api/orcamentos/{id}/resultados` com corpo `{ "desfecho": "fechou", "canal": "whatsapp" }`.
+- Resultado é aceito **apenas em orçamentos elegíveis** (aguardando follow-up):
+  - `404 orcamento_nao_encontrado` — id inexistente;
+  - `409 orcamento_ineligivel` — orçamento existe, mas está fora da fila (fechado, recusado, respondido ou expirado);
+  - `400 json_invalido` — corpo JSON malformado (antes era 500 genérico);
+  - `400 registro_invalido` — corpo válido como JSON, mas fora do contrato (ex.: data fora da faixa plausível 2000–2100 ou inexistente no calendário).
+- Reinício seguro da demonstração: `POST /api/demonstracao/reinicializar` descarta os registros da sessão e devolve a fila restaurada (cópias defensivas da base fictícia — nada é compartilhado por referência).
+- Nenhuma mensagem é enviada, nada é persistido e nada sai da memória da API.
+- Todo payload carrega `"fonte": "dados_ficticios"` e o aviso de demonstração.
+- Ao registrar o último item, a fila exibe o **estado vazio** (com os indicadores atualizados) em vez de uma lista pronta sem itens.
 
 ### Parâmetros de demonstração de estados
 
-A interface tem botões "Demonstrar estados". Por trás, eles usam `?simular=` na API:
+A interface tem botões "Demonstrar estados" (painel e fila) e, na fila, o botão **"Reiniciar demonstração"**. Por trás, eles usam `?simular=` na API:
 
 | Valor | Efeito |
 |---|---|
@@ -72,6 +90,8 @@ pnpm verificar
 
 Equivalente a rodar, nesta ordem: `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`.
 
+Testes: **104** (API 53, Web 51).
+
 Comandos individuais:
 
 ```bash
@@ -80,6 +100,10 @@ pnpm typecheck   # tsc --noEmit em shared, api e web
 pnpm test        # Vitest na api e na web
 pnpm build       # tsc (api/shared) + next build (web)
 ```
+
+### Diretórios de build da web
+
+`next dev` usa `.next/` e o `next build`/`next start` usam `.next-producao/` (configurado em `apps/web/next.config.ts`, sobrescrevível via `NEXT_DIST_DIR`). Validar a produção nunca apaga o cache do servidor de desenvolvimento — e vice-versa. Ambos os diretórios estão no `.gitignore`.
 
 ## Variáveis de ambiente
 

@@ -8,6 +8,12 @@ describe("EstadoCarregando", () => {
     render(<EstadoCarregando />);
     expect(screen.getByRole("status")).toHaveTextContent("Carregando painel…");
   });
+
+  it("aceita rótulo configurável (M1)", () => {
+    render(<EstadoCarregando rotulo="Carregando fila…" />);
+    expect(screen.getByRole("status")).toHaveTextContent("Carregando fila…");
+    expect(screen.getByRole("status")).not.toHaveTextContent("Carregando painel…");
+  });
 });
 
 describe("EstadoVazio", () => {
@@ -27,6 +33,20 @@ describe("EstadoErro", () => {
     render(<EstadoErro mensagem="A API respondeu com erro (HTTP 500)." />);
     expect(screen.getByRole("alert")).toBeInTheDocument();
     expect(screen.getByText("A API respondeu com erro (HTTP 500).")).toBeInTheDocument();
+  });
+
+  it("aceita título configurável (M1)", () => {
+    render(<EstadoErro titulo="Não foi possível carregar a fila" mensagem="Falha" />);
+    expect(
+      screen.getByRole("heading", { name: "Não foi possível carregar a fila" }),
+    ).toBeInTheDocument();
+  });
+
+  it("usa título genérico do painel por padrão", () => {
+    render(<EstadoErro mensagem="Falha" />);
+    expect(
+      screen.getByRole("heading", { name: "Não foi possível carregar o painel" }),
+    ).toBeInTheDocument();
   });
 
   it("executa a ação de tentar novamente ao clicar", async () => {

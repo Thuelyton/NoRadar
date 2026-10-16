@@ -96,7 +96,7 @@ Legenda: `[ ]` pendente · `[~]` em andamento · `[x]` concluído · `[!]` bloqu
 - [x] Escolher o nome do sistema: Radar
 - [ ] Checar disponibilidade do nome Radar (domínio .com.br, Registro.br, INPI)
 - [x] Definir as metas finais do Portão de Decisão (seção 5) *(ajustes aprovados e aplicados — 2026-10-14)*
-- [ ] Criar planilha de acompanhamento das entrevistas
+- [x] Criar planilha de acompanhamento das entrevistas *(tabela de 30 linhas em `prospeccao.md` — 2026-10-14)*
 
 ### FASE 1 — Auditoria e validação de mercado (sem código)
 
@@ -151,11 +151,11 @@ Legenda: `[ ]` pendente · `[~]` em andamento · `[x]` concluído · `[!]` bloqu
 - [x] **Montar estrutura base do monorepo + pipeline de verificação** *(apps/web + apps/api + packages/shared; lint, typecheck, test e build rodando — 2026-10-14, exceção autorizada na seção 8)*
 - [ ] Cadastro de empresa e usuário
 - [ ] Registro de orçamento (valor, cliente, data de envio, validade)
-- [ ] Identificação de orçamentos sem resposta e geração de tarefas
-- [ ] Fila diária de follow-up
+- [ ] Identificação de orçamentos sem resposta e geração de tarefas *(parcial: critério de urgência implementado e testado na fila demonstrativa; geração automática a partir de dados reais ainda não existe)*
+- [~] Fila diária de follow-up *(fluxo completo DEMONSTRATIVO navegável em `/fila` com dados fictícios — 2026-10-16; em produção depende de dados reais e das integrações bloqueadas)*
 - [ ] Sugestão de mensagem por IA + aprovação do vendedor
 - [ ] Envio via WhatsApp oficial (modelos aprovados, opt-out)
-- [ ] Registro de resultado do contato
+- [~] Registro de resultado do contato *(versão simulada: `POST /api/orcamentos/:id/resultados` em memória, sem persistência e sem envio — 2026-10-16; só aceita orçamentos elegíveis, com 404/409 padronizados — 2026-10-16 P1)*
 - [ ] Lembretes de manutenção preventiva
 - [~] Painel de retorno financeiro *(primeira tela navegável criada — **demonstrativa, dados fictícios, sem backend real**; 2026-10-14)*
 - [ ] Testes (funcionais, mensagens, segurança, LGPD)
@@ -211,6 +211,9 @@ Legenda: `[ ]` pendente · `[~]` em andamento · `[x]` concluído · `[!]` bloqu
 | 2026-10-14 | Entregável | **Estrutura real do monorepo + painel navegável criados.** Stack efetivamente instalada: Next.js 15.5.28, React 19.3.1, Fastify 5.12.7, Tailwind 4.3.3, Zod 4.6.7, TypeScript 5.9.3, Vitest 4.1.11, ESLint 9.39.5, Node v24.18.0, pnpm 10.18.3. Verificação real: `pnpm verificar` (lint + typecheck + test + build) passou — **37 testes** (API 15, Web 22), 0 falhas; `next build` OK. Painel validado em navegador headless (Chrome): renderiza 4 indicadores, tabela fictícia e estados carregando/vazio/erro. | Agente |
 | 2026-10-14 | Documentação | Documentos de decisão movidos para `docs/` (NoRadar, arquitetura, concorrencia, prospeccao, roteiro-entrevista) com stubs de redirecionamento na raiz para não quebrar links antigos. `README.md` criado na raiz com comandos testados. **Nenhuma decisão anterior apagada.** | Agente |
 | 2026-10-14 | Publicação | Primeiro commit enviado ao GitHub: `origin = https://github.com/Thuelyton/NoRadar.git`, branch `master`, commit `2b8e532` (58 arquivos). Antes do envio foi feita varredura de segredos nos rastreáveis: nenhum. `.env.example` só com placeholders vazios; `.env` e `.env.local` fora do versionamento. **Limites anteriores revogados apenas para esta publicação** — nenhum outro remote, fork ou serviço de CI configurado. | Usuário + Agente |
+| 2026-10-16 | Entregável | **Fila de follow-up (demonstrativa) implementada:** `GET /api/fila` (pendentes ordenados por dias ↓ e valor ↓), `POST /api/orcamentos/:id/resultados` (registros simulados com `DESFECHO_RESULTADO`/`CANAIS_CONTATO`, em memória), schemas compartilhados (`RegistroResultado`, `FilaFollowUp`, `ResultadoRegistrado`), tela `/fila` com registro e recálculo de indicadores no servidor, menu lateral com navegação real. `pnpm verificar` passou: lint, typecheck, **74 testes** (API 37, Web 37), build OK. **Dados 100% fictícios; nenhuma integração, persistência ou envio real.** | Usuário + Agente |
+| 2026-10-16 | **Hipótese** | Desenvolvedor informou **R$ 97/mês** como **hipótese comercial de teste** para a validação. **NÃO é preço aprovado nem decisão final**: o critério 4 do Portão (§5) permanece com a meta não calculável até o preço-teste ser confirmado **após** as entrevistas de disposição a pagar. O roteiro continua sem sugerir valor ao entrevistado. | Usuário |
+| 2026-10-16 | **Auditoria P1 — correções autorizadas e implementadas** | Desenvolvedor autorizou os itens A1–A3, M1–M6, B1–B3 do Relatório de Auditoria Fase P1 e foram implementados: **A1** fila esvaziada após registros agora mostra estado vazio (com indicadores atualizados); **A2** `POST /api/orcamentos/:id/resultados` responde **409 `orcamento_ineligivel`** para orçamento fora da fila (contrato do repositório passou a discriminar `registrado`/`nao_encontrado`/`ineligivel`); **A3** JSON malformado responde **400 `json_invalido`** (antes virava 500 genérico); **M1** títulos/mensagens dos estados carregando/erro/vazio configuráveis por rota; **M2** itens "em breve" do menu viraram botões desabilitados (não são mais links clicáveis); **M3** metadata própria de `/fila`; **M4** `POST /api/demonstracao/reinicializar` restaura os dados fictícios com cópias defensivas; **M5** schemas compartilhados validam data real no calendário e faixa plausível 2000–2100; **M6** `next build` usa `.next-producao` e `next dev` usa `.next` (sem conflito); **B1** controles de demonstração na fila (simular estados + reiniciar); **B2** `icon.svg` criado (favicon deixou de dar 404); **B3** contraste do rodapé do menu corrigido para zinc-400 (AA). Verificação: `pnpm verificar` passou — lint, typecheck, **104 testes** (API 53, Web 51), build OK; dev revalidado no ar após o build de produção. Nenhuma alteração P0 descartada; nenhum commit feito. | Usuário + Agente |
 | | | | |
 
 ---
@@ -222,7 +225,7 @@ Legenda: `[ ]` pendente · `[~]` em andamento · `[x]` concluído · `[!]` bloqu
 > 2. **[Pronto para usar]** Preencher as 30 linhas de `docs/prospeccao.md` com empresas reais e iniciar os contatos.
 > 3. **[Pendente]** Localizar e salvar a pesquisa do Sebrae com link e data — item 1.1.
 > 4. **[Pendente]** Conseguir a tabela oficial de preços da Meta (página inacessível em 2026-10-14) — critério 7 depende disso.
-> 5. **[Decisão sua]** Definir se o próximo incremento de código é a **fila de follow-up** (item Fase 3) ou se o foco volta às **entrevistas** antes de escrever mais código. A regra 5 deste arquivo vale: sem evidência de entrevista, não há como saber se a fila resolve o problema real.
+> 5. **[Decisão sua]** Fila de follow-up demonstrativa **pronta para demonstração comercial** (`/fila`, registro simulado, indicadores recalculados — 2026-10-16). O foco volta às **entrevistas**: a regra 5 deste arquivo continua valendo — sem evidência de entrevista, não há como saber se a fila resolve o problema real. O R$ 97/mês informado em 2026-10-16 é **hipótese de teste** e só vira preço-teste do critério 4 após as entrevistas de disposição a pagar.
 
 ---
 

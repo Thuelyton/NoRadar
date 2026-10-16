@@ -74,6 +74,7 @@ describe("GET /api/painel", () => {
   it("usa o repositório injetado (prova de desacoplamento da camada de dados)", async () => {
     const repositorioFake: OrcamentoRepository = {
       listar: async (): Promise<Orcamento[]> => [],
+      fila: async (): Promise<Orcamento[]> => [],
       resumo: async () => ({
         orcamentosPendentes: 1,
         contatosRealizados: 2,
@@ -82,6 +83,8 @@ describe("GET /api/painel", () => {
         taxaConversaoPercentual: 50,
         periodo: { inicio: "2026-01-01", fim: "2026-01-31" },
       }),
+      registrarResultado: async () => ({ situacao: "nao_encontrado" }),
+      reinicializar: async () => {},
     };
 
     const appComFake = await criarApp({ repositorio: repositorioFake, nivelLog: "silent" });

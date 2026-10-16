@@ -88,6 +88,34 @@ export interface Painel {
   orcamentos: Orcamento[];
 }
 
+/** Registro do resultado de um follow-up (entrada do vendedor). */
+export interface RegistroResultado {
+  desfecho: DesfechoResultado;
+  canal: CanalContato;
+  /** Data do registro, AAAA-MM-DD. A API preenche com hoje se omitida. */
+  data?: string;
+  /** Observação livre do vendedor (até 300 caracteres). */
+  observacao?: string;
+}
+
+/** Payload da fila de follow-up. */
+export interface FilaFollowUp {
+  fonte: FonteDados;
+  aviso: string;
+  /** Orçamentos aguardando retorno, ordenados por urgência. */
+  itens: Orcamento[];
+  /** Indicadores recalculados considerando os resultados registrados. */
+  resumo: ResumoPainel;
+}
+
+/** Resposta ao registrar o resultado de um follow-up. */
+export interface ResultadoRegistrado {
+  fonte: FonteDados;
+  orcamento: Orcamento;
+  /** Resumo recalculado após o registro — os indicadores nunca ficam defasados. */
+  resumo: ResumoPainel;
+}
+
 /** Erro padronizado da API. */
 export interface ErroApi {
   erro: {
